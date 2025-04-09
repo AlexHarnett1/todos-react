@@ -8,3 +8,9 @@ export const getAllTodos = () => {
     .get<Todo[]>(`${baseUrl}/todos`)
     .then(response => response.data)
 }
+
+export const deleteTodo = (id:number) => {
+  return axios
+    .delete(`${baseUrl}/todos/${id}`)
+    .then(response => response.status)
+}

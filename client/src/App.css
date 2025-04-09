@@ -22,7 +22,7 @@ body {
 }
 
 #sidebar header {
-  background: transparent url('../images/label.png') 0 7px no-repeat;
+  background: transparent url('../src/assets/images/label.png') 0 7px no-repeat;
   margin-left: 100px;
   box-sizing: border-box;
   padding-bottom: 10px;
@@ -34,7 +34,7 @@ body {
 }
 
 #sidebar section.completed header {
-  background-image: url('../images/completed.png');
+  background-image: url('../src/assets/images/completed.png');
   background-position-x: 100px;
 }
 
@@ -254,7 +254,7 @@ table .list_item {
 }
 
 table .list_item .check {
-  background: transparent url("../images/checkbox.png") no-repeat;
+  background: transparent url("../src/assets/images/checkbox.png") no-repeat;
   position: absolute;
   top: 18px;
   left: 15px;
@@ -263,7 +263,7 @@ table .list_item .check {
 }
 
 table td input[type="checkbox"]:checked+.check {
-  background-image: url("../images/checked.png");
+  background-image: url("../src/assets/images/checked.png");
 }
 
 .delete img:hover {
