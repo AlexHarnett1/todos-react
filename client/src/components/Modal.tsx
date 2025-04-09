@@ -1,8 +1,15 @@
-const Modal = () => {
+import { forwardRef, Ref } from "react"
+
+type AdditionalRefProps = {
+  formRef: Ref<HTMLDivElement>;
+};
+
+const Modal = forwardRef<HTMLDivElement, AdditionalRefProps>(
+  ({ formRef }, ref) => {
   return (
     <>
-    <div className="modal" id="modal_layer"></div>
-        <div className="modal" id="form_modal">
+    <div className="modal" id="modal_layer" ref={ref}></div>
+        <div className="modal" id="form_modal" ref={formRef}>
           <form action="" method="post">
             <fieldset>
               <ul>
@@ -93,7 +100,8 @@ const Modal = () => {
       </div>
     </>
   )
-}
+  }
+)
 
 //Commented out placeholder="year" on due year select element
 //  In order to show the modal you must set modal layer and form modal to 

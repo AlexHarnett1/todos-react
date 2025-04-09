@@ -1,8 +1,8 @@
-const Header = () => {
+const Header = ({ todosLength }: { todosLength: number }) => {
   return (
     <header>
       <dl>
-        <dt><time>All Todos</time></dt><dd>4</dd>
+        <dt><time>All Todos</time></dt><dd>{todosLength}</dd>
       </dl>
     </header>
   )

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Header from './components/Header'
-import Todos from './components/Todos'
+import TodoList from './components/TodoList'
 import NewItem from './components/NewItem'
 import Modal from './components/Modal'
 import { Todo } from './types/types'
@@ -9,6 +9,8 @@ import './App.css'
 
 function App() {
   const [todos, setTodos] = useState<Todo[]>([])
+  const modalForm = useRef<HTMLDivElement>(null)
+  const modalLayer = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     getAllTodos().then(data => {
@@ -20,15 +22,19 @@ function App() {
 
   const handleNewItem = () => {
     console.log('handle new item')
+    if (modalForm.current && modalLayer.current) {
+      modalForm.current.style.display = "block"
+      modalLayer.current.style.display = "block"
+    }
   }
 
   return (
     <div id="items">
-      <Header />
+      <Header todosLength={todos.length}/>
       <main>
         <NewItem handleNewItem={handleNewItem}/>
-        <Todos />
-        <Modal />
+        <TodoList todos={todos} />
+        <Modal ref={modalLayer} formRef={modalForm} />
       </main>
     </div>
   )
