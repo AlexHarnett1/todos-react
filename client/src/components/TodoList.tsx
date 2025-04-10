@@ -1,7 +1,7 @@
 import { Todo } from "../types/types"
 
 interface TodoCallbacks {
-  editHandler: () => Todo
+  selectTodoHandler: (id:number) => void
   deleteHandler: (id: number) => void
   completionHandler: () => Todo
 }
@@ -25,7 +25,7 @@ const TodoRow = (props: TodoRowProps) => {
   const callbacks = props.callbacks
   const todo = props.todo
   return (
-    <tr data-id={todo.id}>
+    <tr data-id={todo.id} onClick={() => callbacks.selectTodoHandler(todo.id)}>
       <td className="list_item">
         {todo.completed ?
           <input type="checkbox" name={`item_${todo.id}`} id={`item_${todo.id}`}

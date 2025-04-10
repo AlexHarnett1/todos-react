@@ -1,26 +1,84 @@
 import { forwardRef, Ref } from "react"
+import { Todo, NewTodo } from "../types/types"
+import React from 'react'
 
 type AdditionalRefProps = {
-  formRef: Ref<HTMLDivElement>;
+  formDivRef: Ref<HTMLDivElement>
+  formRef: Ref<HTMLFormElement>
+  newTodoHandler: (newTodo: NewTodo) => void
+  markCompleteHandler: (todoId: number) => void // I should remove this function
+  editTodoHandler: (todo: Todo) => void
+  todo: Todo | null
 };
 
+const alertCantComplete = () => {
+  alert("Can't complete a new todo.")
+}
+
 const Modal = forwardRef<HTMLDivElement, AdditionalRefProps>(
-  ({ formRef }, ref) => {
+  ({ formDivRef, formRef, newTodoHandler, markCompleteHandler, editTodoHandler, todo }, ref) => {
+
+    const [todoFields, setTodoFields] = React.useState<NewTodo>({
+      title: "",
+      description: "",
+      day: "",
+      month: "",
+      year: "",
+    });
+
+    React.useEffect(() => {
+      if (todo) {
+        setTodoFields({
+          title: todo.title ?? "",
+          description: todo.description ?? "",
+          day: todo.day ?? "",
+          month: todo.month ?? "",
+          year: todo.year ?? "",
+        });
+      }
+    }, [todo]);
+
+    const handleFormSubmission = (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+
+      if (todoFields.title.trim() === '') {
+        alert('Todo must have a title')
+        return
+      }
+      
+      if (todo) {
+        editTodoHandler({id: todo.id, completed: todo.completed, ...todoFields})
+      } else {
+        newTodoHandler(todoFields)
+      }
+
+    }
+
+    const handleFieldChange = (e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >) => {
+      const { name, value } = e.target;
+      setTodoFields((prev) => ({ ...prev, [name]: value }));
+    }
+
+    console.log(todoFields)
+
   return (
     <>
     <div className="modal" id="modal_layer" ref={ref}></div>
-        <div className="modal" id="form_modal" ref={formRef}>
-          <form action="" method="post">
+      <div className="modal" id="form_modal" ref={formDivRef} >
+        <form action="" method="post" onSubmit={handleFormSubmission} ref={formRef}>
             <fieldset>
               <ul>
                 <li>
                   <label htmlFor="title">Title</label>
-                  <input type="text" name="title" id="title" placeholder="Item 1"/>
+                <input type="text" name="title" id="title" placeholder="Item 1"
+                  value={todoFields.title} onChange={handleFieldChange} />
                 </li>
                 <li>
                   <label htmlFor="due">Due Date</label>
                   <div className="date">
-                    <select id="due_day" name="due_day">
+                    <select id="due_day" name="due_day" value={todoFields.day} onChange={handleFieldChange}>
                       <option>Day</option>
                       <option value="01">1</option>
                       <option value="02">2</option>
@@ -54,7 +112,7 @@ const Modal = forwardRef<HTMLDivElement, AdditionalRefProps>(
                       <option value="30">30</option>
                       <option value="31">31</option>
                     </select>  /
-                    <select id="due_month" name="due_month">
+                    <select id="due_month" name="due_month" value={todoFields.month} onChange={handleFieldChange}>
                       <option>Month</option>
                       <option value="01">January</option>
                       <option value="02">February</option>
@@ -69,7 +127,7 @@ const Modal = forwardRef<HTMLDivElement, AdditionalRefProps>(
                       <option value="11">November</option>
                       <option value="12">December</option>
                     </select> /
-                    <select id="due_year" name="due_year">
+                    <select id="due_year" name="due_year" value={todoFields.year} onChange={handleFieldChange}>
                       <option>Year</option>
                       <option>2014</option>
                       <option>2015</option>
@@ -88,11 +146,15 @@ const Modal = forwardRef<HTMLDivElement, AdditionalRefProps>(
                 </li>
                 <li>
                   <label htmlFor="description">Description</label>
-                <textarea cols={50} name="description" rows={7} placeholder="Description"></textarea>
+                <textarea cols={50} name="description" rows={7} placeholder="Description"
+                value={todoFields.description} onChange={handleFieldChange}></textarea>
                 </li>
                 <li>
-                  <input type="submit" value="Save" />
-                  <button name="complete">Mark As Complete</button>
+                <input type="submit" value="Save" />
+                <button type="button" name="complete"
+                  onClick={todo ? () => markCompleteHandler(todo.id) : alertCantComplete}>
+                  Mark As Complete
+                </button>
                 </li>
               </ul>
             </fieldset>

@@ -7,3 +7,5 @@ export interface Todo {
   completed: boolean
   description: string
 }
+
+export type NewTodo = Omit<Todo, 'id' | 'completed'>
