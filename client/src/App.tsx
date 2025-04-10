@@ -11,8 +11,6 @@ function App() {
   const [todos, setTodos] = useState<Todo[]>([])
   const [currentTodo, setCurrentTodo] = useState<Todo | null>(null)
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
-  const modalFormDiv = useRef<HTMLDivElement>(null)
-  const modalLayer = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     getAllTodos().then(data => {
@@ -22,20 +20,8 @@ function App() {
   }, [])
 
   const toggleModal = () => {
+    setIsModalVisible(!isModalVisible)
     console.log('Toggling modal')
-    if (modalFormDiv.current && modalLayer.current) {
-      if (modalFormDiv.current.style.display === "block") {
-        setCurrentTodo(null)
-        setIsModalVisible(false)
-        modalFormDiv.current.style.display = "none"
-        modalLayer.current.style.display = "none"
-      }
-      else {
-        setIsModalVisible(true)
-        modalFormDiv.current.style.display = "block"
-        modalLayer.current.style.display = "block"
-      }
-    }
   }
 
   const handleSelectTodo = (id: number) => {
@@ -102,8 +88,8 @@ function App() {
         <NewItem handleNewItem={toggleModal}/>
         <TodoList todos={todos} selectTodoHandler={handleSelectTodo} deleteHandler={handleDeleteTodo}
           completionHandler={handleToggleTodoCompletion} />
-        <Modal ref={modalLayer} formDivRef={modalFormDiv} newTodoHandler={handleCreateNewTodo}
-          updateTodoHandler={handleUpdateTodo} todo={currentTodo} isModalVisible={isModalVisible} />
+        <Modal newTodoHandler={handleCreateNewTodo} updateTodoHandler={handleUpdateTodo}
+          todo={currentTodo} isModalVisible={isModalVisible} />
       </main>
     </div>
   )

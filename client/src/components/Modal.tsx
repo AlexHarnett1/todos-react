@@ -2,16 +2,14 @@ import { forwardRef, Ref } from "react"
 import { Todo, NewTodo } from "../types/types"
 import React from 'react'
 
-type AdditionalRefProps = {
-  formDivRef: Ref<HTMLDivElement>
+type ModalProps = {
   newTodoHandler: (newTodo: NewTodo) => void
   updateTodoHandler: (todo: Todo) => void
   todo: Todo | null
   isModalVisible: boolean
 };
 
-const Modal = forwardRef<HTMLDivElement, AdditionalRefProps>(
-  ({ formDivRef, newTodoHandler, updateTodoHandler, todo, isModalVisible }, ref) => {
+const Modal = (({ newTodoHandler, updateTodoHandler, todo, isModalVisible }: ModalProps) => {
 
     const [todoFields, setTodoFields] = React.useState<NewTodo>({
       title: "",
@@ -65,8 +63,10 @@ const Modal = forwardRef<HTMLDivElement, AdditionalRefProps>(
 
   return (
     <>
-    <div className="modal" id="modal_layer" ref={ref}></div>
-      <div className="modal" id="form_modal" ref={formDivRef} >
+      <div className="modal" id="modal_layer"
+        style={{ display: isModalVisible ? 'block' : 'none' }}></div>
+      <div className="modal" id="form_modal"
+        style={{ display: isModalVisible ? 'block' : 'none' }} >
         <form action="" method="post" onSubmit={handleFormSubmission}>
             <fieldset>
               <ul>
