@@ -1,15 +1,16 @@
-import { forwardRef, Ref } from "react"
 import { Todo, NewTodo } from "../types/types"
 import React from 'react'
 
 type ModalProps = {
   newTodoHandler: (newTodo: NewTodo) => void
   updateTodoHandler: (todo: Todo) => void
+  toggleModalVisibility: () => void
   todo: Todo | null
   isModalVisible: boolean
 };
 
-const Modal = (({ newTodoHandler, updateTodoHandler, todo, isModalVisible }: ModalProps) => {
+const Modal = (({ newTodoHandler, updateTodoHandler, toggleModalVisibility,
+  todo, isModalVisible }: ModalProps) => {
 
     const [todoFields, setTodoFields] = React.useState<NewTodo>({
       title: "",
@@ -42,7 +43,6 @@ const Modal = (({ newTodoHandler, updateTodoHandler, todo, isModalVisible }: Mod
       } else {
         newTodoHandler(todoFields)
       }
-
     }
 
     const handleFieldChange = (e: React.ChangeEvent<
@@ -58,12 +58,11 @@ const Modal = (({ newTodoHandler, updateTodoHandler, todo, isModalVisible }: Mod
       } else {
         alert("Can't complete a new todo.")
       }
-      
     }
 
   return (
     <>
-      <div className="modal" id="modal_layer"
+      <div className="modal" id="modal_layer" onClick={toggleModalVisibility}
         style={{ display: isModalVisible ? 'block' : 'none' }}></div>
       <div className="modal" id="form_modal"
         style={{ display: isModalVisible ? 'block' : 'none' }} >
