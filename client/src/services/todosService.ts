@@ -20,3 +20,9 @@ export const createNewTodo = (newTodo:NewTodo) => {
     .post<Todo>(`${baseUrl}/todos/`, newTodo)
     .then(response => response.data)
 }
+
+export const updateTodo = (todo: Todo) => {
+  return axios
+    .put<Todo>(`${baseUrl}/todos/${todo.id}`, todo)
+    .then(response => response.data)
+}

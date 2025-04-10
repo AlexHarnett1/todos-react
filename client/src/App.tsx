@@ -4,13 +4,13 @@ import TodoList from './components/TodoList'
 import NewItem from './components/NewItem'
 import Modal from './components/Modal'
 import { Todo, NewTodo } from './types/types'
-import { getAllTodos, deleteTodo, createNewTodo } from './services/todosService'
+import { getAllTodos, deleteTodo, createNewTodo, updateTodo } from './services/todosService'
 import './App.css'
 
 function App() {
   const [todos, setTodos] = useState<Todo[]>([])
-  const [todo, setTodo] = useState<Todo | null>(null)
-  const modalForm = useRef<HTMLFormElement>(null)
+  const [currentTodo, setCurrentTodo] = useState<Todo | null>(null)
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
   const modalFormDiv = useRef<HTMLDivElement>(null)
   const modalLayer = useRef<HTMLDivElement>(null)
 
@@ -22,14 +22,16 @@ function App() {
   }, [])
 
   const toggleModal = () => {
-    console.log('Toggling up modal')
+    console.log('Toggling modal')
     if (modalFormDiv.current && modalLayer.current) {
       if (modalFormDiv.current.style.display === "block") {
-        setTodo(null)
+        setCurrentTodo(null)
+        setIsModalVisible(false)
         modalFormDiv.current.style.display = "none"
         modalLayer.current.style.display = "none"
       }
       else {
+        setIsModalVisible(true)
         modalFormDiv.current.style.display = "block"
         modalLayer.current.style.display = "block"
       }
@@ -39,7 +41,7 @@ function App() {
   const handleSelectTodo = (id: number) => {
     console.log('Editing item', id)
     toggleModal()
-    setTodo(todos.find(todo => todo.id === id) || null)
+    setCurrentTodo(todos.find(todo => todo.id === id) || null)
   }
 
   const handleDeleteTodo = (id:number) => {
@@ -58,21 +60,39 @@ function App() {
   const handleCreateNewTodo = (newTodo: NewTodo) => {
     createNewTodo(newTodo).then(todo => {
       setTodos(todos.concat(todo))
-      modalForm.current?.reset()
       toggleModal()
-    }).catch(reason => { 
-      console.log('Error making todo: ', reason)
+    }).catch(error => { 
+      console.log('Error making todo: ', error)
     })
     
   }
 
-  const handleEditTodo = (todo: Todo) => {
-    console.log(todo)
+  const handleUpdateTodo = (todo: Todo) => {
+    updateTodo(todo).then(newTodo => {
+      const newTodos = todos.filter(todo => todo.id !== newTodo.id)
+      setTodos(newTodos.concat(newTodo))
+      toggleModal()
+    }).catch(error => {
+      console.log('Error making todo: ', error)
+    })
   }
 
-  const handleToggleTodoCompletion = () => {
+  const handleToggleTodoCompletion = (id: number) => {
     console.log('handling completion')
-    return todos[0]
+    let todoToComplete = todos.find(todo => todo.id === id)
+    console.log(todoToComplete)
+    if (todoToComplete) {
+      updateTodo({ ...todoToComplete, completed: !todoToComplete.completed }).then(newTodo => {
+        console.log(newTodo)
+        const newTodos = todos.filter(todo => todo.id !== newTodo.id).concat(newTodo)
+        const sortedTodos = newTodos.slice().sort((a, b) => {
+          return Number(a.completed) - Number(b.completed);
+        });
+        setTodos(sortedTodos)
+      })
+    } else {
+      console.log('Error finding todo to toggle completion')
+    }
   }
 
   return (
@@ -82,8 +102,8 @@ function App() {
         <NewItem handleNewItem={toggleModal}/>
         <TodoList todos={todos} selectTodoHandler={handleSelectTodo} deleteHandler={handleDeleteTodo}
           completionHandler={handleToggleTodoCompletion} />
-        <Modal ref={modalLayer} formDivRef={modalFormDiv} formRef={modalForm} newTodoHandler={handleCreateNewTodo}
-          markCompleteHandler={handleToggleTodoCompletion} editTodoHandler={handleEditTodo} todo={todo} />
+        <Modal ref={modalLayer} formDivRef={modalFormDiv} newTodoHandler={handleCreateNewTodo}
+          updateTodoHandler={handleUpdateTodo} todo={currentTodo} isModalVisible={isModalVisible} />
       </main>
     </div>
   )

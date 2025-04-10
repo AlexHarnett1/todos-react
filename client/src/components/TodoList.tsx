@@ -3,7 +3,7 @@ import { Todo } from "../types/types"
 interface TodoCallbacks {
   selectTodoHandler: (id:number) => void
   deleteHandler: (id: number) => void
-  completionHandler: () => Todo
+  completionHandler: (id: number) => void
 }
 
 interface TodoListProps extends TodoCallbacks {
@@ -25,16 +25,19 @@ const TodoRow = (props: TodoRowProps) => {
   const callbacks = props.callbacks
   const todo = props.todo
   return (
-    <tr data-id={todo.id} onClick={() => callbacks.selectTodoHandler(todo.id)}>
-      <td className="list_item">
-        {todo.completed ?
-          <input type="checkbox" name={`item_${todo.id}`} id={`item_${todo.id}`}
-            onChange={callbacks.completionHandler} checked /> :
-          <input type="checkbox" name={`item_${todo.id}`} id={`item_${todo.id}`}
-            onChange={callbacks.completionHandler} />
+    <tr data-id={todo.id}>
+      <td className="list_item" >
+        <input type="checkbox" name={`item_${todo.id}`} id={`item_${todo.id}`}
+          onChange={(e) => e.preventDefault()} checked={!!todo.completed} />
+        <span className="check" onClick={(e) => {
+          console.log('check')
+          e.stopPropagation()
+          callbacks.completionHandler(todo.id)
         }
-        <span className="check" onClick={callbacks.completionHandler}></span>
-        <label htmlFor={`item_${todo.id}`}>{todo.title} - {getDueDate(todo)}</label></td>
+        } ></span>
+        <label htmlFor={`item_${todo.id}`} onClick={() => callbacks.selectTodoHandler(todo.id)}>
+          {todo.title} - {getDueDate(todo)}</label>
+      </td>
       <td className="delete" onClick={() => callbacks.deleteHandler(todo.id)}>
         <img src="./src/assets/images/trash.png" alt="Delete" /></td>
     </tr>

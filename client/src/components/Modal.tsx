@@ -4,19 +4,14 @@ import React from 'react'
 
 type AdditionalRefProps = {
   formDivRef: Ref<HTMLDivElement>
-  formRef: Ref<HTMLFormElement>
   newTodoHandler: (newTodo: NewTodo) => void
-  markCompleteHandler: (todoId: number) => void // I should remove this function
-  editTodoHandler: (todo: Todo) => void
+  updateTodoHandler: (todo: Todo) => void
   todo: Todo | null
+  isModalVisible: boolean
 };
 
-const alertCantComplete = () => {
-  alert("Can't complete a new todo.")
-}
-
 const Modal = forwardRef<HTMLDivElement, AdditionalRefProps>(
-  ({ formDivRef, formRef, newTodoHandler, markCompleteHandler, editTodoHandler, todo }, ref) => {
+  ({ formDivRef, newTodoHandler, updateTodoHandler, todo, isModalVisible }, ref) => {
 
     const [todoFields, setTodoFields] = React.useState<NewTodo>({
       title: "",
@@ -27,16 +22,14 @@ const Modal = forwardRef<HTMLDivElement, AdditionalRefProps>(
     });
 
     React.useEffect(() => {
-      if (todo) {
-        setTodoFields({
-          title: todo.title ?? "",
-          description: todo.description ?? "",
-          day: todo.day ?? "",
-          month: todo.month ?? "",
-          year: todo.year ?? "",
-        });
-      }
-    }, [todo]);
+      setTodoFields({
+        title: todo?.title ?? "",
+        description: todo?.description ?? "",
+        day: todo?.day ?? "",
+        month: todo?.month ?? "",
+        year: todo?.year ?? "",
+      });
+    }, [isModalVisible]);
 
     const handleFormSubmission = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault()
@@ -47,7 +40,7 @@ const Modal = forwardRef<HTMLDivElement, AdditionalRefProps>(
       }
       
       if (todo) {
-        editTodoHandler({id: todo.id, completed: todo.completed, ...todoFields})
+        updateTodoHandler({id: todo.id, completed: todo.completed, ...todoFields})
       } else {
         newTodoHandler(todoFields)
       }
@@ -61,13 +54,20 @@ const Modal = forwardRef<HTMLDivElement, AdditionalRefProps>(
       setTodoFields((prev) => ({ ...prev, [name]: value }));
     }
 
-    console.log(todoFields)
+    const handleMarkComplete = () => {
+      if (todo) {
+        updateTodoHandler({ ...todo, completed: true})
+      } else {
+        alert("Can't complete a new todo.")
+      }
+      
+    }
 
   return (
     <>
     <div className="modal" id="modal_layer" ref={ref}></div>
       <div className="modal" id="form_modal" ref={formDivRef} >
-        <form action="" method="post" onSubmit={handleFormSubmission} ref={formRef}>
+        <form action="" method="post" onSubmit={handleFormSubmission}>
             <fieldset>
               <ul>
                 <li>
@@ -78,7 +78,7 @@ const Modal = forwardRef<HTMLDivElement, AdditionalRefProps>(
                 <li>
                   <label htmlFor="due">Due Date</label>
                   <div className="date">
-                    <select id="due_day" name="due_day" value={todoFields.day} onChange={handleFieldChange}>
+                    <select id="due_day" name="day" value={todoFields.day} onChange={handleFieldChange}>
                       <option>Day</option>
                       <option value="01">1</option>
                       <option value="02">2</option>
@@ -112,7 +112,7 @@ const Modal = forwardRef<HTMLDivElement, AdditionalRefProps>(
                       <option value="30">30</option>
                       <option value="31">31</option>
                     </select>  /
-                    <select id="due_month" name="due_month" value={todoFields.month} onChange={handleFieldChange}>
+                    <select id="due_month" name="month" value={todoFields.month} onChange={handleFieldChange}>
                       <option>Month</option>
                       <option value="01">January</option>
                       <option value="02">February</option>
@@ -127,7 +127,7 @@ const Modal = forwardRef<HTMLDivElement, AdditionalRefProps>(
                       <option value="11">November</option>
                       <option value="12">December</option>
                     </select> /
-                    <select id="due_year" name="due_year" value={todoFields.year} onChange={handleFieldChange}>
+                    <select id="due_year" name="year" value={todoFields.year} onChange={handleFieldChange}>
                       <option>Year</option>
                       <option>2014</option>
                       <option>2015</option>
@@ -152,7 +152,7 @@ const Modal = forwardRef<HTMLDivElement, AdditionalRefProps>(
                 <li>
                 <input type="submit" value="Save" />
                 <button type="button" name="complete"
-                  onClick={todo ? () => markCompleteHandler(todo.id) : alertCantComplete}>
+                  onClick={handleMarkComplete}>
                   Mark As Complete
                 </button>
                 </li>
@@ -164,10 +164,5 @@ const Modal = forwardRef<HTMLDivElement, AdditionalRefProps>(
   )
   }
 )
-
-//Commented out placeholder="year" on due year select element
-//  In order to show the modal you must set modal layer and form modal to 
-// no longer be display:none 
-
 
 export default Modal
