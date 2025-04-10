@@ -15,7 +15,6 @@ function App() {
   useEffect(() => {
     getAllTodos().then(data => {
       setTodos(data)
-      console.log(data)
     })
   }, [])
 
@@ -74,7 +73,7 @@ function App() {
         setTodos(sortedTodos)
       })
     } else {
-      console.log('Error finding todo to toggle completion')
+      console.error('Error finding todo to toggle completion')
     }
   }
 

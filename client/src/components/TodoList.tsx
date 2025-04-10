@@ -30,7 +30,6 @@ const TodoRow = (props: TodoRowProps) => {
         <input type="checkbox" name={`item_${todo.id}`} id={`item_${todo.id}`}
           onChange={(e) => e.preventDefault()} checked={!!todo.completed} />
         <span className="check" onClick={(e) => {
-          console.log('check')
           e.stopPropagation()
           callbacks.completionHandler(todo.id)
         }
