@@ -18,7 +18,7 @@ interface TodoRowProps {
 const getDueDate = (todo: Todo) => {
   if (!todo.month || !todo.year)
     return 'No Due Date'
-  return `${todo.month}/${todo.year}`
+  return `${todo.month}/${todo.year.slice(-2)}`
 }
 
 const TodoRow = (props: TodoRowProps) => {
@@ -26,16 +26,24 @@ const TodoRow = (props: TodoRowProps) => {
   const todo = props.todo
   return (
     <tr data-id={todo.id}>
-      <td className="list_item" >
+      <td className="list_item" onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          callbacks.completionHandler(todo.id)
+        }
+      }}>
         <input type="checkbox" name={`item_${todo.id}`} id={`item_${todo.id}`}
           onChange={(e) => e.preventDefault()} checked={!!todo.completed} />
         <span className="check" onClick={(e) => {
           e.stopPropagation()
           callbacks.completionHandler(todo.id)
-        }
-        } ></span>
-        <label htmlFor={`item_${todo.id}`} onClick={() => callbacks.selectTodoHandler(todo.id)}>
-          {todo.title} - {getDueDate(todo)}</label>
+          }}
+        ></span>
+        <label htmlFor={`item_${todo.id}`} onClick={(e) => {
+          e.stopPropagation()
+          callbacks.selectTodoHandler(todo.id)
+        }}>
+          {todo.title} - {getDueDate(todo)}
+        </label>
       </td>
       <td className="delete" onClick={() => callbacks.deleteHandler(todo.id)}>
         <img src="./src/assets/images/trash.png" alt="Delete" /></td>
